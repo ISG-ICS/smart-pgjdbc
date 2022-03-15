@@ -31,6 +31,8 @@ import org.postgresql.fastpath.Fastpath;
 import org.postgresql.largeobject.LargeObjectManager;
 import org.postgresql.replication.PGReplicationConnection;
 import org.postgresql.replication.PGReplicationConnectionImpl;
+import org.postgresql.smart.LogUtil;
+import org.postgresql.smart.QueryRewritter;
 import org.postgresql.util.GT;
 import org.postgresql.util.HostSpec;
 import org.postgresql.util.LruCache;
@@ -169,6 +171,24 @@ public class PgConnection implements BaseConnection {
   private @Nullable PGXmlFactoryFactory xmlFactoryFactory;
 
   final CachedQuery borrowQuery(String sql) throws SQLException {
+    // ++ SmartJDBC ++ //
+    StringBuilder logText = new StringBuilder();
+    logText.append("==================================================\n");
+    logText.append("  PgConnection -> borrowQuery -> [Original SQL]\n");
+    logText.append("--------------------------------------------------\n");
+    logText.append(sql);
+    LogUtil.log(logText.toString());
+
+    if (sql.toLowerCase().contains("select")) {
+      sql = QueryRewritter.rewriteQuery(sql);
+      logText = new StringBuilder();
+      logText.append("==================================================\n");
+      logText.append("  PgConnection -> borrowQuery -> [Rewritten SQL]\n");
+      logText.append("--------------------------------------------------\n");
+      logText.append(sql);
+      LogUtil.log(logText.toString());
+    }
+    // -- SmartJDBC -- //
     return queryExecutor.borrowQuery(sql);
   }
 
