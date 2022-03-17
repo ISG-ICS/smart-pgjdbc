@@ -11,7 +11,7 @@ public class QueryRewritter {
 
   public static String rewriteQuery(String sql) {
     try {
-      return SmartJDBCClient.request(sql);
+      return SmartJDBCClient.request("{\"cmd\": \"rewrite\", \"db\": \"postgresql\", \"query\": \"" + sql.replace("\"", "\\\"") + "\"}");
     } catch (IOException e) {
       return sql;
     }

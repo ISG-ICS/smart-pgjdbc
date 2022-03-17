@@ -17,6 +17,8 @@ nbproject
 *-dist.zip
 *.po.~*~
 target/
+/bin/
+/*/bin/
 /build/
 /*/build/
 /out/
