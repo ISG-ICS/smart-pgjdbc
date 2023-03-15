@@ -42,6 +42,7 @@ import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TimerTask;
@@ -1013,6 +1014,11 @@ public abstract class AbstractArraysTest<A> {
     @Override
     public boolean getLogServerErrorDetail() {
       return false;
+    }
+
+    @Override
+    public HashMap<String, String> getQuerySqlqueryGuid() {
+      throw new UnsupportedOperationException();
     }
   }
 }

@@ -235,4 +235,11 @@ public interface BaseConnection extends PGConnection, Connection {
    * @return true if should be included and passed on to other exceptions
    */
   boolean getLogServerErrorDetail();
+
+  /**
+   * Return the map between query sql and query guid.
+   *
+   * @return querySqlqueryGuid
+   */
+  java.util.HashMap<String, String> getQuerySqlqueryGuid();
 }

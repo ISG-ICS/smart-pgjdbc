@@ -13,8 +13,7 @@ import java.net.URL;
 
 public class SmartJDBCClient {
 
-  // TODO - Get the parameter from a configuration file.
-  public static final String SMARTJDBC_SERVER_URL = "http://localhost:8000";
+  public static final String SMARTJDBC_SERVER_URL = ConfigUtil.getSmartJDBCServerUrl();
 
   public static String request(String request) throws IOException {
     URL url = new URL(SMARTJDBC_SERVER_URL);

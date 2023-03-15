@@ -170,6 +170,15 @@ public class PgConnection implements BaseConnection {
   private final @Nullable String xmlFactoryFactoryClass;
   private @Nullable PGXmlFactoryFactory xmlFactoryFactory;
 
+  // ++ SmartJDBC ++ //
+  /* Map between query sql and query guid */
+  private final HashMap<String, String> querySqlqueryGuid;
+
+  public HashMap<String, String> getQuerySqlqueryGuid() {
+    return querySqlqueryGuid;
+  }
+  // -- SmartJDBC -- //
+
   final CachedQuery borrowQuery(String sql) throws SQLException {
     // ++ SmartJDBC ++ //
     StringBuilder logText = new StringBuilder();
@@ -177,15 +186,21 @@ public class PgConnection implements BaseConnection {
     logText.append("  PgConnection -> borrowQuery -> [Original SQL]\n");
     logText.append("--------------------------------------------------\n");
     logText.append(sql);
+    logText.append("\n");
     LogUtil.log(logText.toString());
 
     if (sql.toLowerCase().contains("select")) {
-      sql = QueryRewritter.rewriteQuery(sql);
+      String guid = java.util.UUID.randomUUID().toString();
+      sql = QueryRewritter.rewriteQuery(guid, sql).trim();
+      querySqlqueryGuid.put(sql, guid);
       logText = new StringBuilder();
       logText.append("==================================================\n");
       logText.append("  PgConnection -> borrowQuery -> [Rewritten SQL]\n");
       logText.append("--------------------------------------------------\n");
+      logText.append(guid);
+      logText.append("\n");
       logText.append(sql);
+      logText.append("\n");
       LogUtil.log(logText.toString());
     }
     // -- SmartJDBC -- //
@@ -342,6 +357,10 @@ public class PgConnection implements BaseConnection {
     replicationConnection = PGProperty.REPLICATION.get(info) != null;
 
     xmlFactoryFactoryClass = PGProperty.XML_FACTORY_FACTORY.get(info);
+
+    // ++ SmartJDBC ++ //
+    querySqlqueryGuid = new HashMap<String, String>();
+    // -- SmartJDBC -- //
   }
 
   private static ReadOnlyBehavior getReadOnlyBehavior(String property) {

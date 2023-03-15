@@ -20,6 +20,8 @@ import org.postgresql.core.ResultCursor;
 import org.postgresql.core.ResultHandlerBase;
 import org.postgresql.core.SqlCommand;
 import org.postgresql.core.Tuple;
+import org.postgresql.smart.LogUtil;
+import org.postgresql.smart.QueryRewritter;
 import org.postgresql.util.GT;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.PSQLState;
@@ -485,6 +487,9 @@ public class PgStatement implements Statement, BaseStatement {
     synchronized (this) {
       result = null;
     }
+    // ++ SmartJDBC ++ //
+    long start = System.nanoTime();
+    // -- SmartJDBC -- //
     try {
       startTimer();
       connection.getQueryExecutor().execute(queryToExecute, queryParameters, handler, maxrows,
@@ -492,6 +497,38 @@ public class PgStatement implements Statement, BaseStatement {
     } finally {
       killTimerTask();
     }
+    // ++ SmartJDBC ++ //
+    long end = System.nanoTime();
+    long queryTimeMs = (end - start) / 1000000;
+    String sql = queryToExecute.toString().trim();
+    String guid = connection.getQuerySqlqueryGuid().get(sql);
+    if (guid != null) {
+      boolean success = QueryRewritter.reportQuery(guid, queryTimeMs);
+      StringBuilder logText = new StringBuilder();
+      logText.append("==================================================\n");
+      logText.append("  PgStatement -> executeInternal\n");
+      logText.append("--------------------------------------------------\n");
+      logText.append(guid);
+      logText.append("\n");
+      logText.append(sql);
+      logText.append("\n");
+      logText.append("queryTimeMs: " + String.valueOf(queryTimeMs));
+      logText.append("\n");
+      logText.append("reportSuccess: " + String.valueOf(success));
+      logText.append("\n");
+      LogUtil.log(logText.toString());
+    } else {
+      StringBuilder logText = new StringBuilder();
+      logText.append("==================================================\n");
+      logText.append("  PgStatement -> executeInternal\n");
+      logText.append("--------------------------------------------------\n");
+      logText.append(sql);
+      logText.append("\n");
+      logText.append("No guid found for this query!!");
+      logText.append("\n");
+      LogUtil.log(logText.toString());
+    }
+    // -- SmartJDBC -- //
     synchronized (this) {
       checkClosed();
 
