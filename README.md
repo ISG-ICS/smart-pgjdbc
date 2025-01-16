@@ -18,3 +18,20 @@ To build the project, a tested working command is the following:
 After build, the output jar file is at `pgjdbc/build/libs/postgresql-XX.X.X-SNAPSHOT.jar`.
 
 For more development information, refer to the original [CONTRIBUTING.md](CONTRIBUTING.md).
+
+
+Here is an example `smart-pgjdbc.config` file.
+
+```config
+# This is the url that the JDBC driver will talk to for rewriting queries.
+#  - By default pointing to QueryBooster public server.
+#  - You can change it to your private QueryBooster server. 
+# smartjdbc.server.url=http://querybooster.ics.uci.edu/
+smartjdbc.server.url=http://localhost:8000/
+
+# This is the GUID of the Application created in the QueryBooster website.
+#  - You can find this value in the "Applications" page in the QueryBooster website.
+# app.guid=9565c0e4-23a6-11ef-93eb-f40343be1870
+app.guid=02fd209a-2228-11ef-b413-f018982d3476
+```
+
